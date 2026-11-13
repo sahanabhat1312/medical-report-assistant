@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedBuddy | Multilingual AI Medical Report Assistant</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="logo-container">
+      <div class="logo-icon">💚</div>
+      <div class="logo-text">MedBuddy</div>
+      <span class="badge-patient">Patient</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" data-tab="tab-dashboard">
+        <span class="icon">🏠</span>
+        <span>Dashboard</span>
+      </li>
+      <li class="nav-item" data-tab="tab-upload">
+        <span class="icon">📤</span>
+        <span>Upload & Validate</span>
+      </li>
+      <li class="nav-item" data-tab="tab-analysis">
+        <span class="icon">📋</span>
+        <span>Report Analysis</span>
+      </li>
+      <li class="nav-item" data-tab="tab-lab-values">
+        <span class="icon">🔬</span>
+        <span>Lab Value Status</span>
+      </li>
+      <li class="nav-item" data-tab="tab-red-flags">
+        <span class="icon">🚨</span>
+        <span>Red-Flag Alerts</span>
+      </li>
+      <li class="nav-item" data-tab="tab-medicines">
+        <span class="icon">💊</span>
+        <span>Medicine Explainer</span>
+      </li>
+      <li class="nav-item" data-tab="tab-doctor-q">
+        <span class="icon">❓</span>
+        <span>Doctor Questions</span>
+      </li>
+      <li class="nav-item" data-tab="tab-reminders">
+        <span class="icon">⏰</span>
+        <span>Reminders & Doses</span>
+      </li>
+      <li class="nav-item" data-tab="tab-family">
+        <span class="icon">👥</span>
+        <span>Family Members</span>
+      </li>
+      <li class="nav-item" data-tab="tab-profile">
+        <span class="icon">👤</span>
+        <span>Health Profile</span>
+      </li>
+      <li class="nav-item" data-tab="tab-history">
+        <span class="icon">📜</span>
+        <span>History & Audit</span>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-title" id="page-title">Dashboard Overview</div>
+      <div class="header-actions">
+        <!-- Feature 2: Multi-Language Switcher -->
+        <select id="language-switcher" class="lang-select">
+          <option value="en">🌐 English (EN)</option>
+          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+          <option value="kn">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+        </select>
+
+        <!-- User Profile Button (Clickable) -->
+        <div class="user-profile-btn" id="header-profile-btn" onclick="openProfileTab()" title="Click to view & edit your Health Profile" style="cursor: pointer;">
+          <div class="user-avatar" id="avatar-initials">KS</div>
+          <div style="font-size: 13px; font-weight: 600;" id="user-display-name">Kashish Sharma</div>
+        </div>
+
+        <!-- Dedicated Logout Button -->
+        <button class="btn btn-white btn-sm" id="header-logout-btn" onclick="handleLogout()" title="Log out of session" style="border: 1px solid var(--border); display: flex; align-items: center; gap: 6px;">
+          <span style="color: var(--danger);">🚪</span> <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Body -->
+    <main class="content-body">
+
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <!-- Hero Greeting Banner (MedBuddy UI Screenshot Match) -->
+        <div class="hero-banner">
+          <div class="hero-greeting" id="hero-greeting-text">Good evening, Kashish! 👋</div>
+          <div class="hero-subtext" id="hero-sub-text">Here's your comprehensive health summary for today</div>
+          <div class="hero-btn-group">
+            <button class="btn btn-white" onclick="switchTab('tab-upload')">
+              <span>📤</span> Upload Report / Prescription
+            </button>
+            <button class="btn btn-glass" onclick="switchTab('tab-reminders')">
+              <span>⏰</span> View Reminders
+            </button>
+            <button class="btn btn-glass" onclick="startShowcaseTour()" style="background: rgba(255, 255, 255, 0.28); font-weight: 700;" title="Automated step-by-step showcase of all 12 PRD features">
+              <span>✨</span> Live Showcase Tour
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon-wrap icon-teal">💊</div>
+            <div>
+              <div class="metric-value" id="stat-active-meds">4</div>
+              <div class="metric-label">Active Medications</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap icon-green">✅</div>
+            <div>
+              <div class="metric-value" id="stat-taken-today">3/4</div>
+              <div class="metric-label">Doses Taken Today</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap icon-amber">⚠️</div>
+            <div>
+              <div class="metric-value" id="stat-overdue">0</div>
+              <div class="metric-label">Overdue Items</div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap icon-blue">📋</div>
+            <div>
+              <div class="metric-value" id="stat-reports-count">1</div>
+              <div class="metric-label">Saved Lab Reports</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Column Section: Today's Doses & Recent Prescriptions -->
+        <div class="dashboard-columns">
+          <!-- Column 1: Today's Doses -->
+          <div class="card-box">
+            <div class="section-header">
+              <div class="section-title">Today's Doses</div>
+              <a href="#" onclick="switchTab('tab-reminders'); return false;" style="font-size: 13px; color: var(--primary); text-decoration: none; font-weight: 600;">View all →</a>
+            </div>
+            <div id="dashboard-doses-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Column 2: Recent Reports & Explanations -->
+          <div class="card-box">
+            <div class="section-header">
+              <div class="section-title">Recent Reports</div>
+              <a href="#" onclick="switchTab('tab-analysis'); return false;" style="font-size: 13px; color: var(--primary); text-decoration: none; font-weight: 600;">View analysis →</a>
+            </div>
+            <div id="dashboard-recent-reports">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: UPLOAD & VALIDATE ================= -->
+      <section id="tab-upload" class="tab-pane">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Upload & Validate Medical Document</h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+            Feature 3: Strict file verification ensures <strong>only authentic medical documents</strong> (lab reports, prescriptions, discharge summaries) are processed. Non-medical files (invoices, receipts, resumes, books) are safely rejected.
+          </p>
+
+          <!-- Dropzone -->
+          <div class="dropzone" id="upload-dropzone">
+            <div class="dropzone-icon">📁</div>
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Click or Drag & Drop Medical Report Here</div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Supported Formats: PDF, JPG, PNG (Max 16MB)</div>
+            <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+            <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">Select Document</button>
+          </div>
+
+          <!-- Instant 1-Click Test Samples -->
+          <div class="sample-bar">
+            <div class="sample-bar-title">⚡ Instant Test Samples (Click to test with real sample files):</div>
+            <button class="btn btn-white btn-sm" onclick="loadSampleReport('standard_lab')">📄 Standard Lab Report (PDF)</button>
+            <button class="btn btn-white btn-sm" onclick="loadSampleReport('critical_alert')">🚨 Critical Red-Flag Report (PDF)</button>
+            <button class="btn btn-white btn-sm" onclick="loadSampleReport('prescription_image')">🖼️ Prescription Scan (PNG + OCR)</button>
+            <button class="btn btn-danger btn-sm" onclick="loadSampleReport('non_medical')">❌ Non-Medical Invoice [Test Rejection]</button>
+          </div>
+
+          <!-- Upload Status / Rejection Message Banner -->
+          <div id="upload-feedback" style="display: none; margin-top: 16px;"></div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: REPORT ANALYSIS ================= -->
+      <section id="tab-analysis" class="tab-pane">
+        <div class="card-box" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;" id="analysis-report-title">Metropolis Comprehensive Metabolic Panel</h2>
+              <div style="font-size: 13px; color: var(--text-muted);" id="analysis-report-date">Processed on 10-Nov-2026 • Verified Medical File</div>
+            </div>
+
+            <!-- Feature 11: Reading Level Switcher -->
+            <div>
+              <span style="font-size: 13px; color: var(--text-muted); margin-right: 8px;">Reading Level:</span>
+              <div class="level-toggle-group">
+                <button class="level-btn" onclick="setReadingLevel('simple')">Simple</button>
+                <button class="level-btn active" onclick="setReadingLevel('standard')">Standard</button>
+                <button class="level-btn" onclick="setReadingLevel('detailed')">Detailed</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature 4: Audio Explanation Bar (Text-to-Speech) -->
+          <div class="audio-player-box">
+            <div class="audio-info">
+              <span style="font-size: 24px;">🔊</span>
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">Voice Narration (Text-to-Speech)</div>
+                <div style="font-size: 12px; color: var(--text-muted);" id="audio-lang-status">Listen to this report explained aloud in your selected language.</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary btn-sm" id="btn-play-voice" onclick="toggleVoiceNarration()">
+                <span id="voice-btn-icon">▶️</span> <span id="voice-btn-text">Listen Aloud</span>
+              </button>
+              <button class="btn btn-white btn-sm" onclick="stopVoiceNarration()">⏹️ Stop</button>
+            </div>
+          </div>
+
+          <!-- Plain Language Summary Body -->
+          <div id="analysis-summary-box" style="line-height: 1.6; font-size: 15px; background: #f8fafc; padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 20px;">
+            Loading explanation...
+          </div>
+
+          <!-- Feature 1: Plain Language Medical Terms (Glossary) -->
+          <div style="margin-top: 24px;">
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">🩺 Plain-Language Terms Explained</h3>
+            <div id="jargon-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: LAB VALUE STATUS ================= -->
+      <section id="tab-lab-values" class="tab-pane">
+        <div class="card-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;">Laboratory Value Status & Reference Gauges</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">Feature 8: Deterministic comparison strictly against printed laboratory reference intervals.</div>
+            </div>
+            <button class="btn btn-white btn-sm" onclick="switchTab('tab-upload')">Upload New Lab Test</button>
+          </div>
+
+          <table class="lab-table">
+            <thead>
+              <tr>
+                <th>Test Parameter</th>
+                <th>Measured Value</th>
+                <th>Standard Reference Interval</th>
+                <th>Status</th>
+                <th>Visual Gauge</th>
+              </tr>
+            </thead>
+            <tbody id="lab-values-tbody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: RED-FLAG ALERTS ================= -->
+      <section id="tab-red-flags" class="tab-pane">
+        <div class="card-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700; color: #991b1b;">🚨 Clinician-Reviewed Red-Flag Alerts</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">Feature 12: Deterministic alerts for potentially dangerous clinical thresholds.</div>
+            </div>
+          </div>
+
+          <div id="red-flags-container">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div class="alert-box alert-warning" style="margin-top: 20px;">
+            <span>ℹ️</span>
+            <div>
+              <strong>Clinical Principle:</strong> MedBuddy's Red-Flag alerts are triggered only by validated deterministic threshold criteria. They are intended for emergency prioritization and informational guidance, never autonomous diagnosis.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: MEDICINE EXPLAINER ================= -->
+      <section id="tab-medicines" class="tab-pane">
+        <div class="card-box" style="margin-bottom: 20px;">
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Medicine Explainer & Prescribed Regimen</h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+            Feature 9: Understand what each prescribed medicine does, exact dosing schedules, meal timings, and important precautions from verified sources.
+          </p>
+
+          <div id="medicines-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 7: DOCTOR QUESTIONS ================= -->
+      <section id="tab-doctor-q" class="tab-pane">
+        <div class="card-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;">Suggested Questions for Your Doctor</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">Feature 10: Personalized questions generated from your abnormal values to help you prepare for your consultation.</div>
+            </div>
+            <button class="btn btn-white btn-sm" onclick="copyAllQuestions()">📋 Copy Questions</button>
+          </div>
+
+          <div id="doctor-questions-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 8: REMINDERS & POPUPS ================= -->
+      <section id="tab-reminders" class="tab-pane">
+        <div class="card-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;">Medicine & Appointment Reminders</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">Feature 6: Active schedule tracking with interactive dose confirmation and browser notifications.</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openAddReminderModal()">+ Add New Reminder</button>
+          </div>
+
+          <div id="all-reminders-list" style="margin-top: 18px;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 9: FAMILY MEMBERS ================= -->
+      <section id="tab-family" class="tab-pane">
+        <div class="card-box">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;">Family & Caregiver Access Management</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">Feature 5: Patient-controlled consent to securely share selected records with close family members.</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openAddFamilyModal()">+ Invite Family Member</button>
+          </div>
+
+          <table class="lab-table" style="margin-top: 14px;">
+            <thead>
+              <tr>
+                <th>Caregiver Name</th>
+                <th>Relationship</th>
+                <th>Email</th>
+                <th>Permission Scope</th>
+                <th>Access Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="family-table-tbody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 10: HISTORY & AUDIT ================= -->
+      <section id="tab-history" class="tab-pane">
+        <div class="card-box">
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Individual Medical History & Audit Trail</h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 18px;">
+            Feature 7: Full chronological archive of medical reports, explanations, and immutable audit logs of record access.
+          </p>
+
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">📋 Patient Medical Reports Archive</h3>
+          <div id="reports-history-list" style="margin-bottom: 28px;"></div>
+
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">🔒 Access & Sharing Audit Logs</h3>
+          <div id="audit-logs-list"></div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 11: HEALTH PROFILE ================= -->
+      <section id="tab-profile" class="tab-pane">
+        <div class="card-box" style="margin-bottom: 24px;">
+          <div class="section-header">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700;">Patient Health Profile & Personal Details</h2>
+              <div style="font-size: 13px; color: var(--text-muted);">View and manage your personal demographics, clinical baseline, and account settings.</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary btn-sm" onclick="saveProfileChanges()">💾 Save Changes</button>
+              <button class="btn btn-danger btn-sm" onclick="handleLogout()">🚪 Log Out</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 16px;">
+            <!-- Demographics Card -->
+            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 14px;">👤 Personal Demographics</h3>
+              
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Full Name</label>
+                <input type="text" id="prof-name" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="Kashish Sharma">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Email Address</label>
+                <input type="email" id="prof-email" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="kashish.sharma@example.com">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Phone Number</label>
+                <input type="text" id="prof-phone" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="+91 98765 43210">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Age</label>
+                  <input type="number" id="prof-age" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="34">
+                </div>
+                <div>
+                  <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Gender</label>
+                  <select id="prof-gender" class="lang-select" style="width: 100%; border: 1px solid var(--border);">
+                    <option value="Female" selected>Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Clinical Baseline Card -->
+            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 14px;">🩺 Clinical Baseline & Safety</h3>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Blood Group</label>
+                <input type="text" id="prof-blood-group" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="B+">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: #b91c1c; display: block; margin-bottom: 4px;">⚠️ Known Drug Allergies</label>
+                <input type="text" id="prof-allergies" class="lang-select" style="width: 100%; border: 1px solid #fca5a5; background: #fff5f5;" value="Penicillin">
+                <small style="color: var(--text-muted); font-size: 11px;">Checked during prescription analysis.</small>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Chronic Health Conditions</label>
+                <input type="text" id="prof-chronic" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="Type 2 Diabetes Mellitus, Mild Dyslipidemia">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Emergency Contact</label>
+                <input type="text" id="prof-emergency" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="Rohan Sharma (Spouse) - +91 98765 43211">
+              </div>
+            </div>
+
+            <!-- Preferences & Session Card -->
+            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 14px;">⚙️ App Preferences & Session</h3>
+
+              <div style="margin-bottom: 14px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Preferred Language</label>
+                <select id="prof-lang" class="lang-select" style="width: 100%; border: 1px solid var(--border);">
+                  <option value="en">English (EN)</option>
+                  <option value="hi">हिन्दी (Hindi)</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Default Reading Level</label>
+                <select id="prof-reading-level" class="lang-select" style="width: 100%; border: 1px solid var(--border);">
+                  <option value="simple">Simple (Grade-School / Everyday Words)</option>
+                  <option value="standard" selected>Standard (Clear Adult Summary)</option>
+                  <option value="detailed">Detailed (Comprehensive Clinical Mechanism)</option>
+                </select>
+              </div>
+
+              <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveProfileChanges()">
+                  💾 Save Profile Changes
+                </button>
+                <button class="btn btn-danger" style="width: 100%; justify-content: center;" onclick="handleLogout()">
+                  🚪 Log Out of Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Add Reminder -->
+  <div id="modal-reminder" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 14px;">Add Schedule Reminder</h3>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Reminder Type</label>
+        <select id="modal-r-type" class="lang-select" style="width: 100%;">
+          <option value="medicine">💊 Medicine Dose</option>
+          <option value="appointment">🩺 Doctor Appointment</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Title</label>
+        <input type="text" id="modal-r-title" placeholder="e.g. Evening Metformin 500mg" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Timing Instructions</label>
+        <input type="text" id="modal-r-sub" placeholder="e.g. Take after dinner" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="margin-bottom: 18px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Scheduled Time</label>
+        <input type="text" id="modal-r-time" placeholder="e.g. 09:00 PM" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn btn-white btn-sm" onclick="closeModal('modal-reminder')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveNewReminder()">Save Reminder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Family Member -->
+  <div id="modal-family" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 14px;">Invite Family Member / Caregiver</h3>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Full Name</label>
+        <input type="text" id="modal-f-name" placeholder="e.g. Rohan Sharma" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Email Address</label>
+        <input type="email" id="modal-f-email" placeholder="e.g. rohan@example.com" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Relationship</label>
+        <input type="text" id="modal-f-relation" placeholder="e.g. Spouse / Brother / Daughter" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md);">
+      </div>
+      <div style="margin-bottom: 18px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Access Permission Scope</label>
+        <select id="modal-f-perm" class="lang-select" style="width: 100%;">
+          <option value="view_all">Full Access (View Reports, Lab Values & Reminders)</option>
+          <option value="view_reports_only">View Reports Only</option>
+          <option value="manage_reminders">Manage Reminders Only</option>
+        </select>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn btn-white btn-sm" onclick="closeModal('modal-family')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveFamilyMember()">Grant Access</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Logout / Reconnect Modal -->
+  <div id="modal-auth" class="modal-overlay">
+    <div class="modal-card" style="text-align: center; max-width: 440px;">
+      <div style="font-size: 42px; margin-bottom: 10px;">👋</div>
+      <h3 style="margin-bottom: 8px; font-size: 20px;" id="auth-modal-title">Session Ended</h3>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 22px;" id="auth-modal-desc">
+        You have logged out securely. Enter your name or log back in as Demo Patient to resume your health records.
+      </p>
+
+      <div style="text-align: left; margin-bottom: 16px;">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Patient Name</label>
+        <input type="text" id="login-input-name" class="lang-select" style="width: 100%; border: 1px solid var(--border);" value="Kashish Sharma">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="handleLoginSubmit()">
+          🔐 Login to MedBuddy
+        </button>
+        <button class="btn btn-white btn-sm" onclick="closeModal('modal-auth')">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
